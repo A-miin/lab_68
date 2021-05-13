@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block menu %}
+    {% if perms.article.add_article %}
+        <li><a href="{% url "article:add" %}">Создать статью</a></li>
+    {% endif %}
+
+    {% if perms.article.change_article %}
+        <li><a href="{% url "article:update" article.id %}">Редактировать статью</a></li>
+    {% endif %}
+
+    {% if perms.article.delete_article %}
+        <li><a href="{% url "article:delete" article.id %}">Удалить статью</a></li>
+    {% endif %}
+
+    {% if perms.article.add_comment %}
+        <li><a href="{% url "article:comment-create" article.id %}">Добавить Комментарий</a></li>
+    {% endif %}
+{% endblock menu %}
+
+{% block page_header %}Статья {{ article.id }}{% endblock page_header %}
+
+{% block content %}
+    <p>Title: {{ article.title }}</p>
+    <p>Author: {{ article.author }}</p>
+    <p>Content: {{ article.content }}</p>
+    <p>Tags: {% for tag in article.tags.all %}{{ tag.tag }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+
+    <h2>Comments:</h2>
+    {% for comment in article.comments.all %}
+        <p>{{ comment.author }}: {{ comment.comment }}</p>
+    {% empty %}
+        <p>Нет комментариев :(</p>
+    {% endfor %}
+{% endblock content %}
