@@ -3,6 +3,31 @@ from django.db import models
 from django.core.validators import MinLengthValidator
 from django.conf import settings
 
+class ArticleLike(models.Model):
+    article = models.ForeignKey( 'article.Article',
+        on_delete=models.CASCADE,
+        related_name='likes',
+        verbose_name='Like')
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='article_likes', verbose_name='article_like')
+    class Meta:
+        verbose_name = "ArticleLike"
+        verbose_name_plural = "ArticleLikes"
+
+    def __str__(self):
+        return f'{self.article.title} - {self.user.username}'
+
+class CommentLike(models.Model):
+    comment = models.ForeignKey( 'article.Comment',
+        on_delete=models.CASCADE,
+        related_name='likes',
+        verbose_name='Like')
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='comment_likes', verbose_name='comment Like')
+    class Meta:
+        verbose_name = "CommentLike"
+        verbose_name_plural = "CommentLikes"
+
+    def __str__(self):
+        return f'{self.comment.article.title} comment - {self.user}'
 
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -81,3 +106,4 @@ class Tag(BaseModel):
     
     def __str__(self):
         return self.tag
+

@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import redirect
+from django.http import HttpResponseForbidden
+from django.shortcuts import redirect, render
 from django.views.generic import (
     ListView,
     CreateView,
@@ -8,11 +9,13 @@ from django.views.generic import (
     UpdateView,
     DeleteView
 )
+from django.views import  View
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 from django.utils.http import urlencode
+from django.shortcuts import get_object_or_404
 
-from article.models import Article
+from article.models import Article, ArticleLike
 from article.forms import ArticleForm, SearchForm
 
 
@@ -104,4 +107,34 @@ class ArticleDeleteView(PermissionRequiredMixin, DeleteView):
     context_object_name = 'article'
     success_url = reverse_lazy('article:list')
     permission_required = 'article.delete_article'
+
+class ArticleLikeCreateView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        article = get_object_or_404(Article, id=kwargs.get('pk'))
+        user_likes = user.article_likes.all()
+        if user_likes.filter(article=article).count()>0:
+            print('already liked')
+            return HttpResponseForbidden('Already liked')
+        else:
+            ArticleLike.objects.create(user = user, article = article).save()
+        return redirect('article:list')
+
+class ArticleLikeDeleteView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        article = get_object_or_404(Article, id=kwargs.get('pk'))
+        user_likes = user.article_likes.all()
+        if user_likes.filter(article=article).count()>0:
+            ArticleLike.objects.get(user=user, article=article).delete()
+        else:
+            print('not liked')
+            return HttpResponseForbidden('Not liked')
+        return redirect('article:list')
+
+
+
+
+
+
 

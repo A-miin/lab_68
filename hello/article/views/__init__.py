@@ -4,6 +4,8 @@ from article.views.articles import (
     CreateArticleView,
     ArticleUpdateView,
     ArticleDeleteView,
+ArticleLikeCreateView,
+ArticleLikeDeleteView
 )
 
 from article.views.comments import ArticleCommentCreate
