@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.http import HttpResponseForbidden
+from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView
 from django.shortcuts import reverse, get_object_or_404, redirect
@@ -33,13 +34,16 @@ class CommentLikeCreateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         user = request.user
         comment = get_object_or_404(Comment, id=kwargs.get('pk'))
+        print(comment)
         user_likes = user.comment_likes.all()
         if user_likes.filter(comment=comment).count()>0:
             print('already liked')
             return HttpResponseForbidden('Already liked')
         else:
             CommentLike.objects.create(user = user, comment=comment).save()
-        return redirect('article:view', kwargs = {'pk':comment.article.pk})
+        next = request.GET.get('next', '/articles/')
+        return redirect(next)
+
 
 class CommentLikeDeleteView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -51,4 +55,5 @@ class CommentLikeDeleteView(LoginRequiredMixin, View):
         else:
             print('not liked')
             return HttpResponseForbidden('Not liked')
-        return redirect('article:view', kwargs = {'pk':comment.article.pk})
+        next = request.GET.get('next', '/articles/')
+        return redirect(next)

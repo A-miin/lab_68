@@ -118,7 +118,8 @@ class ArticleLikeCreateView(LoginRequiredMixin, View):
             return HttpResponseForbidden('Already liked')
         else:
             ArticleLike.objects.create(user = user, article = article).save()
-        return redirect('article:list')
+        next = request.GET.get('next', '/articles/')
+        return redirect(next)
 
 class ArticleLikeDeleteView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -130,7 +131,8 @@ class ArticleLikeDeleteView(LoginRequiredMixin, View):
         else:
             print('not liked')
             return HttpResponseForbidden('Not liked')
-        return redirect('article:list')
+        next = request.GET.get('next', '/articles/')
+        return redirect(next)
 
 
 

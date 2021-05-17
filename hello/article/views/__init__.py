@@ -8,4 +8,4 @@ ArticleLikeCreateView,
 ArticleLikeDeleteView
 )
 
-from article.views.comments import ArticleCommentCreate
+from article.views.comments import ArticleCommentCreate,CommentLikeCreateView,CommentLikeDeleteView
